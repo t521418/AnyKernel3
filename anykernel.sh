@@ -53,6 +53,8 @@ else
 fi
 flash_dtbo
 ## end boot install
+#!/system/bin/sh
+
 set -e
 
 # 初始化环境
@@ -104,6 +106,13 @@ DTBO_B="/dev/block/by-name/dtbo_b"
 
 # 从当前槽位的 dtbo 分区读取数据并保存为本地文件
 read_dtbo_from_partition "/dev/block/by-name/dtbo${current_slot}" "dtbo.img"
+
+# 检查当前槽位的 dtbo 文件是否已经包含 HMBIRD_GKI
+log "检查当前槽位的 dtbo 文件是否已经包含 HMBIRD_GKI"
+if grep -q 'HMBIRD_GKI' dtbo.img; then
+    log "当前槽位的 dtbo 文件已包含 HMBIRD_GKI，跳过刷写操作"
+    exit 0
+fi
 
 # 开始处理 dtbo 镜像
 log "开始处理 dtbo 镜像..."
